@@ -31,6 +31,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    subjects: {
+      type: [String],
+      default: [],
+    },
+    subject: {
+      type: String,
+    },
     fields: {
       type: String,
       enum: ["PRIMARY", "CEM", "LICEE"],

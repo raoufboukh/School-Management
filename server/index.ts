@@ -8,6 +8,8 @@ import MongoStore from "connect-mongo";
 import session from "express-session";
 import configurePassport from "./controllers/auth.controllers.ts";
 import passport from "passport";
+import schoolRoutes from "./routers/school.routes.ts";
+import scheduleRoutes from "./routers/schedule.routes.ts";
 
 const app = express();
 dotenv.config();
@@ -44,6 +46,8 @@ configurePassport(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/auth", router);
+app.use("/api/school", schoolRoutes);
+app.use("/api/schedules", scheduleRoutes);
 
 mongoose.connect(connectionUrl).then(() => {
   console.log("Connected to MongoDB");

@@ -10,7 +10,6 @@ import {
 
 const scheduleRoutes = express.Router();
 
-// Schedule CRUD Routes
 scheduleRoutes.post("/", createSchedule);
 scheduleRoutes.get("/student/:studentId", getStudentSchedule);
 scheduleRoutes.get("/teacher/:teacherId", getTeacherSchedule);

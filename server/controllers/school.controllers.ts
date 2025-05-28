@@ -6,19 +6,17 @@ import bcrypt from "bcrypt";
 
 export const addTeacher = async (req: any, res: any) => {
   try {
-    const { username, email, password, subject } = req.body;
-    if (!username || !email || !password || !subject) {
-      return res
-        .status(400)
-        .json({
-          message: !username
-            ? "Username is required"
-            : !email
-            ? "Email is required"
-            : !password
-            ? "Password is required"
-            : "Subject is required",
-        });
+    const { name, email, password, subject } = req.body;
+    if (!name || !email || !password || !subject) {
+      return res.status(400).json({
+        message: !name
+          ? "Name is required"
+          : !email
+          ? "Email is required"
+          : !password
+          ? "Password is required"
+          : "Subject is required",
+      });
     }
     const existingTeacher = await User.findOne({ email });
     if (existingTeacher)
@@ -28,13 +26,14 @@ export const addTeacher = async (req: any, res: any) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newTeacher = new User({
-      username,
+      name,
       email,
       password: hashedPassword,
       role: "teacher",
-      subject,
+      subjects: [subject],
     });
     await newTeacher.save();
+    console.log("Adding teacher:", req.body);
     res
       .status(201)
       .json({ message: "Teacher added successfully", teacher: newTeacher });
@@ -227,15 +226,38 @@ export const markAttendance = async (req: any, res: any) => {
   }
 };
 
+import mongoose from "mongoose";
+
 export const getSubjectSessionHistory = async (req: any, res: any) => {
   try {
-    const { studentId, teacherId, subject } = req.query;
+    let { studentId, teacherId, subject } = req.query;
+
+    if (!studentId || !teacherId || !subject) {
+      return res.status(400).json({
+        message: "studentId, teacherId, and subject are required",
+      });
+    }
+
+    studentId = studentId.trim();
+    teacherId = teacherId.trim();
+    subject = subject.trim();
+
+    if (
+      !mongoose.Types.ObjectId.isValid(studentId) ||
+      !mongoose.Types.ObjectId.isValid(teacherId)
+    ) {
+      return res.status(400).json({
+        message: "Invalid studentId or teacherId format",
+      });
+    }
+
+    console.log("Looking up payment with:", { studentId, teacherId, subject });
 
     const subjectPayment = await SubjectPayment.findOne({
-      studentId,
-      teacherId,
+      studentId: new mongoose.Types.ObjectId(studentId),
+      teacherId: new mongoose.Types.ObjectId(teacherId),
       subject,
-    }).populate("teacherId", "username email");
+    }).populate("teacherId", "name email");
 
     if (!subjectPayment) {
       return res
@@ -244,25 +266,27 @@ export const getSubjectSessionHistory = async (req: any, res: any) => {
     }
 
     const attendanceHistory = await Attendance.find({
-      studentId,
-      teacherId,
+      studentId: new mongoose.Types.ObjectId(studentId),
+      teacherId: new mongoose.Types.ObjectId(teacherId),
       subject,
       subjectPaymentId: subjectPayment._id,
     })
       .populate("scheduleId", "dayOfWeek startTime endTime classroom")
       .sort({ date: -1 });
 
+    const totalSessionsUsed =
+      subjectPayment.sessionsAttended + subjectPayment.sessionsAbsent;
+
     const stats = {
       totalSessionsPaid: subjectPayment.totalSessionsPaid,
       sessionsRemaining: subjectPayment.sessionsRemaining,
       sessionsAttended: subjectPayment.sessionsAttended,
       sessionsAbsent: subjectPayment.sessionsAbsent,
+      totalSessionsUsed,
       attendanceRate:
-        subjectPayment.sessionsAttended > 0
+        totalSessionsUsed > 0
           ? (
-              (subjectPayment.sessionsAttended /
-                (subjectPayment.sessionsAttended +
-                  subjectPayment.sessionsAbsent)) *
+              (subjectPayment.sessionsAttended / totalSessionsUsed) *
               100
             ).toFixed(2)
           : 0,
@@ -274,7 +298,11 @@ export const getSubjectSessionHistory = async (req: any, res: any) => {
       stats,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching session history", error });
+    console.error("Error fetching session history:", error);
+    res.status(500).json({
+      message: "Error fetching session history",
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 };
 
@@ -284,7 +312,7 @@ export const getStudentReport = async (req: any, res: any) => {
 
     const subjectPayments = await SubjectPayment.find({ studentId }).populate(
       "teacherId",
-      "username email"
+      "name email"
     );
 
     const report = [];

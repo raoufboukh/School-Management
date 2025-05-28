@@ -15,19 +15,16 @@ export const createSchedule = async (req: any, res: any) => {
       classroom,
     } = req.body;
 
-    // Verify student exists and has paid for this subject
     const student = await User.findById(studentId);
     if (!student || student.role !== "student") {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    // Verify teacher exists
     const teacher = await User.findById(teacherId);
     if (!teacher || teacher.role !== "teacher") {
       return res.status(404).json({ message: "Teacher not found" });
     }
 
-    // Verify payment exists and is active
     const subjectPayment = await SubjectPayment.findById(subjectPaymentId);
     if (
       !subjectPayment ||

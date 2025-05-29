@@ -4,10 +4,32 @@ import { Attendance } from "../models/attendance.model.js";
 import { Schedule } from "../models/schedule.model.ts";
 import bcrypt from "bcrypt";
 
-export const addTeacher = async (req: any, res: any) => {
+export const getStudents = async (req: any, res: any) => {
   try {
-    const { name, email, password, subject } = req.body;
-    if (!name || !email || !password || !subject) {
+    const students = await User.find({ role: "student" }).select("-password");
+    res.status(200).json({ students });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching students", error });
+  }
+};
+
+export const getStudent = async (req: any, res: any) => {
+  try {
+    const { studentId } = req.params;
+    const student = await User.findById(studentId).select("-password");
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    res.status(200).json({ student });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching student", error });
+  }
+};
+
+export const addStudent = async (req: any, res: any) => {
+  try {
+    const { name, email, password, fields, number } = req.body;
+    if (!name || !email || !password || !fields || !number) {
       return res.status(400).json({
         message: !name
           ? "Name is required"
@@ -15,7 +37,70 @@ export const addTeacher = async (req: any, res: any) => {
           ? "Email is required"
           : !password
           ? "Password is required"
-          : "Subject is required",
+          : !fields
+          ? "Fields is required"
+          : "Number is required",
+      });
+    }
+    const existingStudent = await User.findOne({ email });
+    if (existingStudent)
+      return res
+        .status(400)
+        .json({ message: "Student with this email already exists" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newStudent = new User({
+      name,
+      email,
+      password: hashedPassword,
+      fields,
+      number,
+    });
+    await newStudent.save();
+    res
+      .status(201)
+      .json({ message: "Student added successfully", student: newStudent });
+  } catch (error) {
+    res.status(500).json({ message: "Error adding student", error });
+  }
+};
+
+export const getTeachers = async (req: any, res: any) => {
+  try {
+    const teachers = await User.find({ role: "teacher" }).select("-password");
+    res.status(200).json({ teachers });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching teachers", error });
+  }
+};
+
+export const getTeacher = async (req: any, res: any) => {
+  try {
+    const { teacherId } = req.params;
+    const teacher = await User.findById(teacherId).select("-password");
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+    res.status(200).json({ teacher });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching teacher", error });
+  }
+};
+
+export const addTeacher = async (req: any, res: any) => {
+  try {
+    const { name, email, password, subject, number } = req.body;
+    if (!name || !email || !password || !subject || !number) {
+      return res.status(400).json({
+        message: !name
+          ? "Name is required"
+          : !email
+          ? "Email is required"
+          : !password
+          ? "Password is required"
+          : !subject
+          ? "Subject is required"
+          : "Number is required",
       });
     }
     const existingTeacher = await User.findOne({ email });
@@ -31,9 +116,9 @@ export const addTeacher = async (req: any, res: any) => {
       password: hashedPassword,
       role: "teacher",
       subjects: [subject],
+      number,
     });
     await newTeacher.save();
-    console.log("Adding teacher:", req.body);
     res
       .status(201)
       .json({ message: "Teacher added successfully", teacher: newTeacher });

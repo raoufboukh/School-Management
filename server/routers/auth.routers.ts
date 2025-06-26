@@ -6,6 +6,7 @@ import {
   logout,
   register,
   success,
+  updateProfile,
 } from "../controllers/auth.controllers.ts";
 
 const router = express.Router();
@@ -29,6 +30,8 @@ router.get(
     res.redirect("http://localhost:3000/");
   }
 );
+
+router.put("/update", updateProfile);
 
 router.get("/success", success);
 router.get("/failed", failed);

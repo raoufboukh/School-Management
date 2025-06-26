@@ -4,6 +4,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { User } from "../models/auth.model.ts";
 import passport from "passport";
 import dotenv from "dotenv";
+import cloudinary from "../lib/cloudinary.ts";
 dotenv.config();
 
 export default function configurePassport(passport: passport.PassportStatic) {
@@ -120,5 +121,40 @@ export const checkAuth = (req: any, res: any) => {
     res.status(200).json({ user: req.user });
   } else {
     res.status(401).json({ message: "Unauthorized" });
+  }
+};
+
+export const updateProfile = async (req: any, res: any) => {
+  try {
+    const { name, email, image, number, fields } = req.body;
+    if (!name || !email || !fields || !number)
+      return res.status(400).json({
+        message: !name
+          ? "Name is required"
+          : !email
+          ? "Email is required"
+          : !fields
+          ? "Fields is required"
+          : "Number is required",
+      });
+
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    let imageUrl;
+
+    user.name = name;
+    user.email = email;
+    user.number = number;
+    user.fields = fields;
+    if (image) {
+      imageUrl = await cloudinary.uploader.upload(image);
+      user.profilePicture = imageUrl.secure_url;
+    }
+
+    await user.save();
+    res.status(200).json({ message: "Profile updated successfully", user });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
   }
 };

@@ -3,6 +3,7 @@ import { User } from "../models/auth.model.ts";
 import { Attendance } from "../models/attendance.model.js";
 import { Schedule } from "../models/schedule.model.ts";
 import bcrypt from "bcrypt";
+import mongoose from "mongoose";
 
 export const getStudents = async (req: any, res: any) => {
   try {
@@ -310,8 +311,6 @@ export const markAttendance = async (req: any, res: any) => {
     res.status(500).json({ message: "Error marking attendance", error });
   }
 };
-
-import mongoose from "mongoose";
 
 export const getSubjectSessionHistory = async (req: any, res: any) => {
   try {

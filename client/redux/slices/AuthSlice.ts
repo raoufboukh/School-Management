@@ -73,8 +73,20 @@ export const googleFailure = createAsyncThunk(
   }
 );
 
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (userData: any, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.put("/auth/update", userData);
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const initialState = {
-  user: null,
+  user: null as any,
   isChecking: false,
   isSignInUp: false,
   isLoggedIn: false,
@@ -160,6 +172,19 @@ export const authSlice = createSlice({
         state.isLoggedIn = false;
       })
       .addCase(googleFailure.rejected, (state) => {
+        state.isSignInUp = false;
+        state.user = null;
+        state.isLoggedIn = false;
+      })
+      .addCase(updateProfile.pending, (state) => {
+        state.isSignInUp = true;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.isSignInUp = false;
+        state.user = action.payload.user;
+        state.isLoggedIn = true;
+      })
+      .addCase(updateProfile.rejected, (state) => {
         state.isSignInUp = false;
         state.user = null;
         state.isLoggedIn = false;

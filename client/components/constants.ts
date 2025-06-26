@@ -44,3 +44,21 @@ export const items = [
     role: ["student", "admin", "teacher"],
   },
 ];
+
+export const subjects = [
+  "Mathematics",
+  "Science",
+  "English",
+  "History",
+  "Geography",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "Computer Science",
+  "Art",
+  "Music",
+  "Physical Education",
+  "Economics",
+  "Psychology",
+  "Sociology",
+];

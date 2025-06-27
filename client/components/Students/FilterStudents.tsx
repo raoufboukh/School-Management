@@ -1,4 +1,4 @@
-import { Link } from "lucide-react";
+import Link from "next/link";
 import { MdDelete, MdEdit, MdEmail, MdPhone } from "react-icons/md";
 
 const FilterStudents = ({ filteredStudents }: any) => {
@@ -66,17 +66,19 @@ const FilterStudents = ({ filteredStudents }: any) => {
           </div>
 
           <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-            <Link href={`/students/${student._id}`}>
-              <button className="text-primary hover:text-primary/80 font-medium text-sm transition-colors duration-300">
-                View Details
-              </button>
+            <Link
+              href={`/students/${student._id}`}
+              className="text-primary hover:text-primary/80 font-medium text-sm transition-colors duration-300"
+            >
+              View Details
             </Link>
 
             <div className="flex items-center gap-2">
-              <Link href={`/students/${student._id}/edit`}>
-                <button className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors duration-300">
-                  <MdEdit className="text-sm" />
-                </button>
+              <Link
+                href={`/students/${student._id}/edit`}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors duration-300"
+              >
+                <MdEdit className="text-sm" />
               </Link>
 
               <button className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors duration-300">

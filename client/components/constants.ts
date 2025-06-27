@@ -1,4 +1,5 @@
 import { Calendar, Home, Inbox, Settings, User } from "lucide-react";
+import { MdBarChart, MdEventNote, MdPayment, MdPerson } from "react-icons/md";
 
 export const items = [
   {
@@ -61,4 +62,22 @@ export const subjects = [
   "Economics",
   "Psychology",
   "Sociology",
+];
+
+export const tablePayment = [
+  "Subject",
+  "Teacher",
+  "Amount",
+  "Sessions",
+  " Remaining",
+  "Attendance",
+  "Date",
+  "Status",
+];
+
+export const linksStudent = [
+  { id: "overview", label: "Overview", icon: MdPerson },
+  { id: "payments", label: "Payments", icon: MdPayment },
+  { id: "attendance", label: "Attendance", icon: MdEventNote },
+  { id: "analytics", label: "Analytics", icon: MdBarChart },
 ];

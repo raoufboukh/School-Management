@@ -1,5 +1,12 @@
 import { Calendar, Home, Inbox, Settings, User } from "lucide-react";
-import { MdBarChart, MdEventNote, MdPayment, MdPerson } from "react-icons/md";
+import {
+  MdBarChart,
+  MdCalendarToday,
+  MdEventNote,
+  MdGroup,
+  MdPayment,
+  MdPerson,
+} from "react-icons/md";
 
 export const items = [
   {
@@ -80,4 +87,11 @@ export const linksStudent = [
   { id: "payments", label: "Payments", icon: MdPayment },
   { id: "attendance", label: "Attendance", icon: MdEventNote },
   { id: "analytics", label: "Analytics", icon: MdBarChart },
+];
+
+export const linksTeacher = [
+  { id: "overview", label: "Overview", icon: MdPerson },
+  { id: "students", label: "Students", icon: MdGroup },
+  { id: "schedule", label: "Schedule", icon: MdCalendarToday },
+  { id: "performance", label: "Performance", icon: MdBarChart },
 ];

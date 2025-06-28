@@ -59,7 +59,9 @@ const Form = ({
         >
           <option value="">Select Subject</option>
           {subjects.map((subject) => (
-            <option value={subject}>{subject}</option>
+            <option key={subject} value={subject}>
+              {subject}
+            </option>
           ))}
         </select>
       </div>

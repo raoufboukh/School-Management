@@ -13,28 +13,39 @@ import {
 import { MdSchool } from "react-icons/md";
 import { items } from "../constants";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function AppSidebar() {
+  const path = usePathname();
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>
-            <div className="flex items-center gap-2 pt-5">
-              <span className="p-2 bg-primary rounded-lg">
-                <MdSchool className="text-2xl text-secondary" />
-              </span>
-              <span className="text-lg font-semibold">EduManage</span>
-            </div>
+          <div className="flex items-center gap-2 pt-5">
+            <span className="p-2 bg-primary rounded-lg">
+              <MdSchool className="text-2xl text-secondary" />
+            </span>
+            <span className="text-lg font-semibold">EduManage</span>
+          </div>
+          <SidebarGroupLabel className="mt-8 mb-2 text-base font-semibold">
+            <p>Menu</p>
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="mt-8">
+            <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={`text-lg py-4`}>
+                  <SidebarMenuButton asChild>
                     <Link
                       href={item.link}
-                      className={`cursor-pointer p-2  hover:bg-accent-70 transition-colors duration-300`}
+                      className={`flex items-center gap-2 transition-all duration-300 ${
+                        (
+                          item.link === "/"
+                            ? path === "/"
+                            : path.startsWith(item.link)
+                        )
+                          ? "bg-accent/80"
+                          : ""
+                      }`}
                     >
                       <item.icon />
                       <span>{item.title}</span>

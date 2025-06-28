@@ -170,11 +170,27 @@ export const getStudentReport = createAsyncThunk(
   }
 );
 
+export const getTeacherStudents = createAsyncThunk(
+  "school/getTeacherStudents",
+  async (teacherId: string, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.get(
+        `/api/school/teachers/${teacherId}/students`
+      );
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 interface SchoolState {
   teachers: any[];
   students: any[];
   student: any | null;
   teacher: any | null;
+  teacherStudents: any[];
+  teacherStudentsLoading: boolean;
   payments: any[];
   paymentHistory: any[];
   attendance: any[];
@@ -189,6 +205,8 @@ const initialState: SchoolState = {
   students: [],
   student: null,
   teacher: null,
+  teacherStudents: [],
+  teacherStudentsLoading: false,
   payments: [],
   paymentHistory: [],
   attendance: [],
@@ -321,7 +339,6 @@ export const schoolSlice = createSlice({
       })
       .addCase(markAttendance.fulfilled, (state, action) => {
         state.loading = false;
-        // Handle attendance update logic here
       })
       .addCase(markAttendance.rejected, (state, action) => {
         state.loading = false;
@@ -350,6 +367,18 @@ export const schoolSlice = createSlice({
       })
       .addCase(getStudentReport.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getTeacherStudents.pending, (state) => {
+        state.teacherStudentsLoading = true;
+        state.error = null;
+      })
+      .addCase(getTeacherStudents.fulfilled, (state, action) => {
+        state.teacherStudentsLoading = false;
+        state.teacherStudents = action.payload.students;
+      })
+      .addCase(getTeacherStudents.rejected, (state, action) => {
+        state.teacherStudentsLoading = false;
         state.error = action.payload;
       });
   },

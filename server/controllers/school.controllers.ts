@@ -441,3 +441,49 @@ export const getStudentReport = async (req: any, res: any) => {
     res.status(500).json({ message: "Error generating student report", error });
   }
 };
+
+export const getTeacherStudents = async (req: any, res: any) => {
+  try {
+    const { teacherId } = req.params;
+    const subjectPayment = await SubjectPayment.find({
+      teacherId,
+    }).populate("studentId", "name email fields isActive");
+    const studentData = <any>[];
+    for (const payment of subjectPayment) {
+      const student = payment.studentId as any;
+      const attendanceRecords = await Attendance.find({
+        studentId: student._id,
+        teacherId,
+        subjectPayment: payment._id,
+      });
+      const presentCount = attendanceRecords.filter(
+        (record) => record.status === "present" || record.status === "late"
+      ).length;
+      const attendanceRate =
+        payment.sessionsAttended > 0
+          ? Math.round((presentCount / payment.sessionsAttended) * 100)
+          : 0;
+      const lastAttendance = await Attendance.findOne({
+        studentId: student._id,
+        teacherId,
+        subjectPaymentId: payment._id,
+      }).sort({ date: -1 });
+      studentData.push({
+        _id: student._id,
+        name: student.name,
+        email: student.email,
+        fields: student.fields,
+        subject: payment.subject,
+        isActive: student.isActive,
+        attendanceRate,
+        lastAttendance: lastAttendance ? lastAttendance.date : null,
+        totalSessions: payment.totalSessionsPaid,
+        attendedSessions: payment.sessionsAttended,
+      });
+    }
+
+    res.status(200).json({ students: studentData });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message || "Error Get Students" });
+  }
+};

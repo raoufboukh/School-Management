@@ -12,6 +12,7 @@ import {
   addStudent,
   getTeachers,
   getTeacher,
+  getTeacherStudents,
 } from "../controllers/school.controllers.js";
 
 const schoolRoutes = express.Router();
@@ -32,5 +33,6 @@ schoolRoutes.post("/attendance", markAttendance);
 schoolRoutes.get("/attendance/history", getSubjectSessionHistory);
 
 schoolRoutes.get("/report/student/:studentId", getStudentReport);
+schoolRoutes.get("/teachers/:teacherId/students", getTeacherStudents);
 
 export default schoolRoutes;

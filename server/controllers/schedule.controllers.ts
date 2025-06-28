@@ -77,14 +77,25 @@ export const getTeacherSchedule = async (req: any, res: any) => {
   try {
     const { teacherId } = req.params;
 
-    const schedules = await Schedule.find({ teacherId, isActive: true })
-      .populate("studentId", "username email")
-      .populate("subjectPaymentId", "sessionsRemaining totalSessionsPaid")
-      .sort({ dayOfWeek: 1, startTime: 1 });
+    const schedules = await Schedule.find({
+      teacherId,
+    }).populate("studentId", "name");
 
-    res.status(200).json({ schedules });
+    const scheduleData = schedules.map((schedule) => ({
+      _id: schedule._id,
+      subject: schedule.subject,
+      dayOfWeek: schedule.dayOfWeek,
+      startTime: schedule.startTime,
+      endTime: schedule.endTime,
+      classroom: schedule.classroom,
+      studentName: schedule.studentId.name,
+    }));
+
+    res.status(200).json({ teacherSchedules: scheduleData });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching teacher schedule", error });
+    res
+      .status(500)
+      .json({ message: "Error fetching teacher schedules", error });
   }
 };
 

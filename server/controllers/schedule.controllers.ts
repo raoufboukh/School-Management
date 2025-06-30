@@ -79,7 +79,7 @@ export const getTeacherSchedule = async (req: any, res: any) => {
 
     const schedules = await Schedule.find({
       teacherId,
-    }).populate("studentId", "name");
+    }).populate("studentId");
 
     const scheduleData = schedules.map((schedule) => ({
       _id: schedule._id,
@@ -88,7 +88,7 @@ export const getTeacherSchedule = async (req: any, res: any) => {
       startTime: schedule.startTime,
       endTime: schedule.endTime,
       classroom: schedule.classroom,
-      studentName: schedule.studentId.name,
+      studentsCount: schedules.length,
     }));
 
     res.status(200).json({ teacherSchedules: scheduleData });

@@ -13,7 +13,7 @@ import {
   MdDownload,
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { getTeacher } from "@/redux/slices/schoolSlice";
+import { getTeacher, getTeacherStudents } from "@/redux/slices/schoolSlice";
 import Link from "next/link";
 import { AppDispatch, RootState } from "@/redux/store/store";
 import { linksTeacher } from "@/components/constants";
@@ -21,6 +21,7 @@ import Overview from "@/components/Teachers/Teacher/Overview/Overview";
 import Students from "@/components/Teachers/Teacher/Students/Students";
 import Schedules from "@/components/Teachers/Teacher/Schedules/Schedules";
 import Performance from "@/components/Teachers/Teacher/Performance/Performance";
+import { getTeacherSchedule } from "@/redux/slices/ScheduleSlice";
 
 interface Teacher {
   _id: string;
@@ -33,88 +34,22 @@ interface Teacher {
   createdAt: string;
 }
 
-interface TeacherStudent {
-  _id: string;
-  name: string;
-  email: string;
-  fields: "PRIMARY" | "CEM" | "LICEE";
-  subject: string;
-  totalSessions: number;
-  attendedSessions: number;
-  attendanceRate: number;
-  lastAttendance: string;
-}
-
-interface ClassSchedule {
-  _id: string;
-  subject: string;
-  dayOfWeek: string;
-  startTime: string;
-  endTime: string;
-  classroom: string;
-  studentsCount: number;
-}
-
 const Teacher = () => {
   const params = useParams();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const { teacher, loading } = useSelector((state: RootState) => state.school);
-
+  const { teacher, loading, teacherStudents, teacherStudentsLoading } =
+    useSelector((state: RootState) => state.school);
+  const scheduleState = useSelector((state: RootState) => state.schedule);
+  const teacherSchedules = scheduleState?.teacherSchedules || [];
   const [activeTab, setActiveTab] = useState("overview");
-  const [teacherStudents, setTeacherStudents] = useState<TeacherStudent[]>([]);
-  const [classSchedules, setClassSchedules] = useState<ClassSchedule[]>([]);
-
   const teacherId = params.id as string;
 
   useEffect(() => {
     if (teacherId) {
       dispatch(getTeacher(teacherId));
-      setTeacherStudents([
-        {
-          _id: "1",
-          name: "Alice Johnson",
-          email: "alice@example.com",
-          fields: "LICEE",
-          subject: "Mathematics",
-          totalSessions: 20,
-          attendedSessions: 18,
-          attendanceRate: 90,
-          lastAttendance: "2024-01-15",
-        },
-        {
-          _id: "2",
-          name: "Bob Smith",
-          email: "bob@example.com",
-          fields: "CEM",
-          subject: "Physics",
-          totalSessions: 16,
-          attendedSessions: 14,
-          attendanceRate: 87.5,
-          lastAttendance: "2024-01-14",
-        },
-      ]);
-
-      setClassSchedules([
-        {
-          _id: "1",
-          subject: "Mathematics",
-          dayOfWeek: "Monday",
-          startTime: "08:00",
-          endTime: "09:30",
-          classroom: "Room 101",
-          studentsCount: 25,
-        },
-        {
-          _id: "2",
-          subject: "Physics",
-          dayOfWeek: "Wednesday",
-          startTime: "10:00",
-          endTime: "11:30",
-          classroom: "Lab 202",
-          studentsCount: 20,
-        },
-      ]);
+      dispatch(getTeacherStudents(teacherId));
+      dispatch(getTeacherSchedule(teacherId));
     }
   }, [dispatch, teacherId]);
 
@@ -277,25 +212,25 @@ const Teacher = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
           <div className="bg-blue-50 p-4 rounded-lg text-center">
             <div className="text-2xl font-bold text-blue-600">
-              {teacherStudents.length}
+              {teacherStudents?.length || 0}
             </div>
             <div className="text-sm text-blue-800">Active Students</div>
           </div>
           <div className="bg-green-50 p-4 rounded-lg text-center">
             <div className="text-2xl font-bold text-green-600">
-              {getTeacherSubjects(teacher).length}
+              {getTeacherSubjects(teacher)?.length || 0}
             </div>
             <div className="text-sm text-green-800">Subjects Taught</div>
           </div>
           <div className="bg-purple-50 p-4 rounded-lg text-center">
             <div className="text-2xl font-bold text-purple-600">
-              {classSchedules.length}
+              {teacherSchedules.length}
             </div>
             <div className="text-sm text-purple-800">Weekly Classes</div>
           </div>
           <div className="bg-orange-50 p-4 rounded-lg text-center">
             <div className="text-2xl font-bold text-orange-600">
-              {teacherStudents.length > 0
+              {(teacherStudents?.length || 0) > 0
                 ? Math.round(
                     teacherStudents.reduce(
                       (sum, s) => sum + s.attendanceRate,
@@ -333,26 +268,26 @@ const Teacher = () => {
         {activeTab === "overview" && (
           <Overview
             teacher={teacher}
-            teacherStudents={teacherStudents}
+            teacherStudents={teacherStudents || []}
             getTeacherSubjects={getTeacherSubjects}
-            classSchedules={classSchedules}
+            classSchedules={teacherSchedules}
             formatDate={formatDate}
           />
         )}
         {activeTab === "students" && (
           <Students
-            teacherStudents={teacherStudents}
+            teacherStudents={teacherStudents || []}
             formatDate={formatDate}
             getFieldColor={getFieldColor}
           />
         )}
         {activeTab === "schedule" && (
-          <Schedules classSchedules={classSchedules} />
+          <Schedules classSchedules={teacherSchedules} />
         )}
         {activeTab === "performance" && (
           <Performance
             teacher={teacher}
-            teacherStudents={teacherStudents}
+            teacherStudents={teacherStudents || []}
             getTeacherSubjects={getTeacherSubjects}
           />
         )}

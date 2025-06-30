@@ -95,3 +95,47 @@ export const linksTeacher = [
   { id: "schedule", label: "Schedule", icon: MdCalendarToday },
   { id: "performance", label: "Performance", icon: MdBarChart },
 ];
+
+export const announcements = [
+  {
+    id: 1,
+    title: "Parent-Teacher Meeting",
+    date: "November 15, 2024",
+    classes: "border-l-4 border-blue-500 pl-4",
+  },
+  {
+    id: 2,
+    title: "Science Fair Registration",
+    date: "November 20, 2024",
+    classes: "border-l-4 border-green-500 pl-4",
+  },
+  {
+    id: 3,
+    title: "Winter Break Schedule",
+    date: "December 18, 2024",
+    classes: "border-l-4 border-purple-500 pl-4",
+  },
+];
+
+export const quickLinks = [
+  {
+    label: "Student Portal",
+    classes:
+      "bg-blue-100 hover:bg-blue-200 text-blue-800 py-3 px-4 rounded-lg transition-colors",
+  },
+  {
+    label: "Teacher Portal",
+    classes:
+      "bg-green-100 hover:bg-green-200 text-success py-3 px-4 rounded-lg transition-colors",
+  },
+  {
+    label: "Library",
+    classes:
+      "bg-purple-100 hover:bg-purple-200 text-purple-800 py-3 px-4 rounded-lg transition-colors",
+  },
+  {
+    label: "Events",
+    classes:
+      "bg-orange-100 hover:bg-orange-200 text-warning py-3 px-4 rounded-lg transition-colors",
+  },
+];

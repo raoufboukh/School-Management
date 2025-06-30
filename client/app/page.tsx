@@ -1,10 +1,21 @@
 "use client";
+import { announcements, quickLinks } from "@/components/constants";
+import { getStudents, getTeachers } from "@/redux/slices/schoolSlice";
+import { AppDispatch, RootState } from "@/redux/store/store";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Home() {
+  const { teachers } = useSelector((state: RootState) => state.school);
+  const { students } = useSelector((state: RootState) => state.school);
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(getTeachers());
+    dispatch(getStudents());
+  }, [dispatch]);
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
             Welcome to Greenwood High School
@@ -14,15 +25,18 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="text-3xl font-bold text-blue-600 mb-2">1,247</div>
+            <div className="text-3xl font-bold text-blue-600 mb-2">
+              {students.length}
+            </div>
             <div className="text-accent">Total Students</div>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="text-3xl font-bold text-green-600 mb-2">89</div>
+            <div className="text-3xl font-bold text-green-600 mb-2">
+              {teachers.length}
+            </div>
             <div className="text-accent">Teachers</div>
           </div>
 
@@ -36,26 +50,18 @@ export default function Home() {
             <div className="text-accent">Departments</div>
           </div>
         </div>
-
-        {/* Quick Info */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">
               Recent Announcements
             </h3>
             <ul className="space-y-3">
-              <li className="border-l-4 border-blue-500 pl-4">
-                <div className="font-medium">Parent-Teacher Meeting</div>
-                <div className="text-sm text-accent">November 15, 2024</div>
-              </li>
-              <li className="border-l-4 border-green-500 pl-4">
-                <div className="font-medium">Science Fair Registration</div>
-                <div className="text-sm text-accent">November 20, 2024</div>
-              </li>
-              <li className="border-l-4 border-purple-500 pl-4">
-                <div className="font-medium">Winter Break Schedule</div>
-                <div className="text-sm text-accent">December 18, 2024</div>
-              </li>
+              {announcements.map((announcement) => (
+                <li key={announcement.id} className={announcement.classes}>
+                  <div className="font-medium">{announcement.title}</div>
+                  <div className="text-sm text-accent">{announcement.date}</div>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -64,18 +70,14 @@ export default function Home() {
               Quick Links
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              <button className="bg-blue-100 hover:bg-blue-200 text-blue-800 py-3 px-4 rounded-lg transition-colors">
-                Student Portal
-              </button>
-              <button className="bg-green-100 hover:bg-green-200 text-success py-3 px-4 rounded-lg transition-colors">
-                Teacher Portal
-              </button>
-              <button className="bg-purple-100 hover:bg-purple-200 text-purple-800 py-3 px-4 rounded-lg transition-colors">
-                Library
-              </button>
-              <button className="bg-orange-100 hover:bg-orange-200 text-error py-3 px-4 rounded-lg transition-colors">
-                Events
-              </button>
+              {quickLinks.map((link, index) => (
+                <button
+                  key={index}
+                  className={`${link.classes} w-full text-center font-medium transition-colors`}
+                >
+                  {link.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>

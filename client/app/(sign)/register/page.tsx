@@ -1,0 +1,264 @@
+"use client";
+import { register } from "@/redux/slices/AuthSlice";
+import { AppDispatch, RootState } from "@/redux/store/store";
+import Link from "next/link";
+import { useState } from "react";
+import { IoLogoGoogle } from "react-icons/io";
+import {
+  MdEmail,
+  MdLock,
+  MdVisibility,
+  MdVisibilityOff,
+  MdSchool,
+} from "react-icons/md";
+import { FaUser } from "react-icons/fa";
+import { BsTelephoneFill } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { fields } from "@/components/constants";
+
+const Login = () => {
+  const { isSignInUp } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    number: "",
+    fields: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (
+      form.name.trim() !== "" ||
+      form.email.trim() !== "" ||
+      form.password.trim() !== ""
+    ) {
+      dispatch(register(form));
+      setForm({ name: "", email: "", password: "", number: "", fields: "" });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4 shadow-lg">
+            <MdSchool className="text-white text-2xl" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Create A new Account
+          </h1>
+          <p className="text-gray-600">
+            Create new account for School Management
+          </p>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium text-gray-700"
+                  htmlFor="name"
+                >
+                  Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaUser className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="name"
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 bg-gray-50 focus:bg-white"
+                    placeholder="Enter your FullName"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium text-gray-700"
+                  htmlFor="email"
+                >
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MdEmail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 bg-gray-50 focus:bg-white"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium text-gray-700"
+                  htmlFor="pass"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MdLock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="pass"
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={(e) =>
+                      setForm({ ...form, password: e.target.value })
+                    }
+                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 bg-gray-50 focus:bg-white"
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  >
+                    {showPassword ? (
+                      <MdVisibilityOff className="h-5 w-5" />
+                    ) : (
+                      <MdVisibility className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium text-gray-700"
+                  htmlFor="num"
+                >
+                  Number
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <BsTelephoneFill className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="num"
+                    type="tel"
+                    value={form.number}
+                    onChange={(e) =>
+                      setForm({ ...form, number: e.target.value })
+                    }
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 bg-gray-50 focus:bg-white"
+                    placeholder="Enter your Number"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium text-gray-700"
+                  htmlFor="field"
+                >
+                  Fields
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MdSchool className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <select
+                    id="field"
+                    value={form.fields}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 bg-gray-50 focus:bg-white"
+                    onChange={(e) =>
+                      setForm({ ...form, fields: e.target.value })
+                    }
+                  >
+                    <option value="">Select Field</option>
+                    {fields.map((field) => (
+                      <option key={field} value={field.toUpperCase()}>
+                        {field}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSignInUp}
+                className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none shadow-lg cursor-pointer"
+              >
+                {isSignInUp ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Creating...
+                  </div>
+                ) : (
+                  "Create"
+                )}
+              </button>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  (window.location.href = "http://localhost:5000/auth/google")
+                }
+                className="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 shadow-lg cursor-pointer flex items-center justify-center border border-gray-300"
+              >
+                <IoLogoGoogle className="text-red-500 mr-2 text-xl" />
+                Sign in with Google
+              </button>
+            </form>
+          </div>
+
+          <div className="px-8 py-6 bg-gray-50 border-t border-gray-100">
+            <p className="text-center text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="text-primary hover:text-primary/80 font-semibold transition-colors duration-200"
+              >
+                Login
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-xs text-gray-500">
+            By signing in, you agree to our{" "}
+            <Link href="#" className="text-primary hover:underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="#" className="text-primary hover:underline">
+              Privacy Policy
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;

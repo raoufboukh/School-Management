@@ -103,7 +103,12 @@ export const register = async (req: any, res: any) => {
       number,
     });
     await newUser.save();
-    res.status(201).json({ message: "User created successfully" });
+    req.login(newUser, (err: any) => {
+      if (err) return res.status(500).json({ message: "Login failed" });
+      res
+        .status(201)
+        .json({ message: "User created successfully", user: newUser });
+    });
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
@@ -126,7 +131,7 @@ export const checkAuth = (req: any, res: any) => {
 
 export const updateProfile = async (req: any, res: any) => {
   try {
-    const { name, email, image, number, fields } = req.body;
+    const { name, email, profilePicture, number, fields } = req.body;
     if (!name || !email || !fields || !number)
       return res.status(400).json({
         message: !name
@@ -141,19 +146,37 @@ export const updateProfile = async (req: any, res: any) => {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    let imageUrl;
-
-    user.name = name;
-    user.email = email;
-    user.number = number;
-    user.fields = fields;
-    if (image) {
-      imageUrl = await cloudinary.uploader.upload(image);
-      user.profilePicture = imageUrl.secure_url;
+    if (email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser && existingUser._id.toString() !== user._id.toString()) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
     }
 
+    const imageUrl = profilePicture
+      ? await cloudinary.uploader.upload(profilePicture)
+      : user?.profilePicture;
+
+    const upload =
+      typeof imageUrl === "object" && imageUrl.secure_url
+        ? imageUrl.secure_url
+        : imageUrl;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      {
+        name,
+        email,
+        number,
+        fields,
+        profilePicture: upload,
+      },
+      { new: true }
+    );
     await user.save();
-    res.status(200).json({ message: "Profile updated successfully", user });
+    res
+      .status(200)
+      .json({ message: "Profile updated successfully", user: updatedUser });
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }

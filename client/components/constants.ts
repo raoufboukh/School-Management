@@ -139,3 +139,5 @@ export const quickLinks = [
       "bg-orange-100 hover:bg-orange-200 text-warning py-3 px-4 rounded-lg transition-colors",
   },
 ];
+
+export const fields = ["Primary", "CEM", "Licee"];

@@ -1,9 +1,11 @@
 "use client";
 
+import { fields } from "@/components/constants";
 import Account from "@/components/Settings/Account/Account";
 import Password from "@/components/Settings/Password/Password";
 import { updateProfile } from "@/redux/slices/AuthSlice";
 import { AppDispatch, RootState } from "@/redux/store/store";
+import Image from "next/image";
 import { useState } from "react";
 import {
   MdPerson,
@@ -45,10 +47,11 @@ const Settings = () => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
         setFormData((prev) => ({
           ...prev,
-          profilePicture: e.target?.result as string,
+          profilePicture: result,
         }));
       };
       reader.readAsDataURL(file);
@@ -59,6 +62,7 @@ const Settings = () => {
     setIsLoading(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log(formData);
       dispatch(updateProfile(formData));
       setIsEditing(false);
     } catch (error) {
@@ -124,15 +128,13 @@ const Settings = () => {
               <div className="flex items-center mb-6">
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
-                    {formData.profilePicture ? (
-                      <img
-                        src={formData.profilePicture}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      formData.name.charAt(0).toUpperCase()
-                    )}
+                    <Image
+                      width={96}
+                      height={96}
+                      src={formData.profilePicture || "/assets/avatar.png"}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   {isEditing && (
                     <label className="absolute bottom-0 right-0 bg-primary text-white p-1.5 rounded-full cursor-pointer hover:bg-primary/90 transition-colors">
@@ -240,9 +242,11 @@ const Settings = () => {
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                       >
                         <option value="">Select Level</option>
-                        <option value="PRIMARY">Primary</option>
-                        <option value="CEM">CEM</option>
-                        <option value="LICEE">Lycée</option>
+                        {fields.map((field) => (
+                          <option key={field} value={field.toUpperCase()}>
+                            {field}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>

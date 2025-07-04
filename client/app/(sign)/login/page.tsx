@@ -49,7 +49,10 @@ const Login = () => {
           <div className="p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  className="text-sm font-medium text-gray-700"
+                  htmlFor="email"
+                >
                   Email Address
                 </label>
                 <div className="relative">
@@ -57,6 +60,7 @@ const Login = () => {
                     <MdEmail className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
+                    id="email"
                     type="email"
                     value={form.email}
                     onChange={(e) =>
@@ -70,7 +74,10 @@ const Login = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  className="text-sm font-medium text-gray-700"
+                  htmlFor="pass"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -78,6 +85,7 @@ const Login = () => {
                     <MdLock className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
+                    id="pass"
                     type={showPassword ? "text" : "password"}
                     value={form.password}
                     onChange={(e) =>

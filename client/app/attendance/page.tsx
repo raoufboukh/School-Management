@@ -9,7 +9,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store/store";
 import TableAttendance from "@/components/Attendance/TableAttendance";
-import { subjects } from "@/components/constants";
 import Form from "@/components/Attendance/Form";
 
 interface AttendanceRecord {
@@ -18,7 +17,6 @@ interface AttendanceRecord {
   checkInTime?: string;
   notes?: string;
 }
-
 interface Student {
   _id: string;
   name: string;
@@ -28,7 +26,7 @@ interface Student {
 }
 const Attendance = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { students, teachers, loading } = useSelector(
+  const { students, teachers, loading, teacherStudents } = useSelector(
     (state: RootState) => state.school
   );
   const [selectedTeacher, setSelectedTeacher] = useState("");
@@ -52,11 +50,25 @@ const Attendance = () => {
   useEffect(() => {
     if (students) {
       let filtered = students;
+      if (selectedTeacher && teacherStudents && teacherStudents.length > 0) {
+        const teacherStudentIds = teacherStudents.map(
+          (ts) => ts.studentId || ts._id
+        );
+        filtered = students.filter((student) =>
+          teacherStudentIds.includes(student._id)
+        );
+      }
+      if (selectedSubject) {
+        filtered = filtered.filter((student) =>
+          student.subjects?.includes(selectedSubject.toLowerCase())
+        );
+      }
       if (selectedField) {
-        filtered = students.filter(
+        filtered = filtered.filter(
           (student) => student.fields === selectedField
         );
       }
+
       setFilteredStudents(filtered);
 
       const initialRecords: Record<string, AttendanceRecord> = {};
@@ -73,7 +85,13 @@ const Attendance = () => {
       });
       setAttendanceRecords(initialRecords);
     }
-  }, [students, selectedField]);
+  }, [
+    students,
+    selectedField,
+    selectedTeacher,
+    teacherStudents,
+    selectedSubject,
+  ]);
 
   const handleSubmitAttendance = async () => {
     if (!selectedTeacher || !selectedSubject) {
@@ -99,8 +117,6 @@ const Attendance = () => {
     return {
       present: records.filter((r) => r.status === "present").length,
       absent: records.filter((r) => r.status === "absent").length,
-      late: records.filter((r) => r.status === "late").length,
-      excused: records.filter((r) => r.status === "excused").length,
       total: records.length,
     };
   };
@@ -136,7 +152,7 @@ const Attendance = () => {
           teachers={teachers}
         />
 
-        <div className="grid grid-cols-5 gap-4 mt-4">
+        <div className="grid grid-cols-3 gap-4 mt-4">
           <div className="text-center p-2 bg-green-50 border border-green-200 rounded">
             <div className="text-lg font-bold text-green-700">
               {counts.present}
@@ -148,18 +164,6 @@ const Attendance = () => {
               {counts.absent}
             </div>
             <div className="text-xs text-red-600">Absent</div>
-          </div>
-          <div className="text-center p-2 bg-orange-50 border border-orange-200 rounded">
-            <div className="text-lg font-bold text-orange-700">
-              {counts.late}
-            </div>
-            <div className="text-xs text-orange-600">Late</div>
-          </div>
-          <div className="text-center p-2 bg-blue-50 border border-blue-200 rounded">
-            <div className="text-lg font-bold text-blue-700">
-              {counts.excused}
-            </div>
-            <div className="text-xs text-blue-600">Excused</div>
           </div>
           <div className="text-center p-2 bg-gray-50 border border-gray-200 rounded">
             <div className="text-lg font-bold text-gray-700">

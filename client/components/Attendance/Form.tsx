@@ -1,5 +1,8 @@
-import React, { useState } from "react";
-import { subjects } from "../constants";
+import { useState } from "react";
+import { subjects, fields } from "../constants";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store/store";
+import { getTeacherStudents } from "@/redux/slices/schoolSlice";
 
 const Form = ({
   setSelectedField,
@@ -10,6 +13,7 @@ const Form = ({
   selectedField,
   selectedSubject,
 }: any) => {
+  const dispatch = useDispatch<AppDispatch>();
   const [classTime, setClassTime] = useState("08:00");
   const [endTime, setEndTime] = useState("09:00");
   const [classroom, setClassroom] = useState("");
@@ -36,7 +40,12 @@ const Form = ({
         </label>
         <select
           value={selectedTeacher}
-          onChange={(e) => setSelectedTeacher(e.target.value)}
+          onChange={(e) => {
+            setSelectedTeacher(e.target.value);
+            if (e.target.value) {
+              dispatch(getTeacherStudents(e.target.value));
+            }
+          }}
           className="w-full border-2 border-gray-300 rounded px-2 py-1 text-sm"
         >
           <option value="">Select Teacher</option>
@@ -78,9 +87,11 @@ const Form = ({
           className="w-full border-2 border-gray-300 rounded px-2 py-1 text-sm"
         >
           <option value="">All Levels</option>
-          <option value="PRIMARY">Primary</option>
-          <option value="CEM">CEM</option>
-          <option value="LICEE">Lycée</option>
+          {fields.map((field) => (
+            <option key={field.toUpperCase()} value={field}>
+              {field}
+            </option>
+          ))}
         </select>
       </div>
 

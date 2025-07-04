@@ -6,6 +6,10 @@ import {
   MdGroup,
   MdPayment,
   MdPerson,
+  MdCheck,
+  MdClose,
+  MdAccessTime,
+  MdWarning,
 } from "react-icons/md";
 
 export const items = [
@@ -54,7 +58,7 @@ export const items = [
 ];
 
 export const subjects = [
-  "Mathematics",
+  "Math",
   "Science",
   "English",
   "History",
@@ -141,3 +145,36 @@ export const quickLinks = [
 ];
 
 export const fields = ["Primary", "CEM", "Licee"];
+
+export const tableAttendance = [
+  {
+    title: "No.",
+    icon: "",
+    classes: "",
+  },
+  {
+    title: "Name",
+    icon: "",
+    classes: "",
+  },
+  {
+    title: "Level",
+    icon: "",
+    classes: "",
+  },
+  {
+    title: "Present",
+    icon: MdCheck,
+    classes: "text-success",
+  },
+  {
+    title: "Absent",
+    icon: MdClose,
+    classes: "text-error",
+  },
+  {
+    title: "Time In",
+    icon: "",
+    classes: "",
+  },
+];

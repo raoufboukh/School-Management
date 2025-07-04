@@ -223,7 +223,7 @@ export const getPaymentHistory = async (req: any, res: any) => {
 
 export const markAttendance = async (req: any, res: any) => {
   try {
-    const { studentId, scheduleId, status, notes } = req.body;
+    const { studentId, scheduleId, status } = req.body;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -267,7 +267,7 @@ export const markAttendance = async (req: any, res: any) => {
     let sessionConsumed = false;
     let sessionNumber = 0;
 
-    if (status === "present" || status === "late") {
+    if (status === "present") {
       subjectPayment.sessionsRemaining -= 1;
       subjectPayment.sessionsAttended += 1;
       sessionConsumed = true;
@@ -291,9 +291,7 @@ export const markAttendance = async (req: any, res: any) => {
       subject: schedule.subject,
       date: new Date(),
       status,
-      checkInTime:
-        status === "present" || status === "late" ? new Date() : undefined,
-      notes,
+      checkInTime: status === "present" ? new Date() : undefined,
       sessionConsumed,
       sessionNumber,
     });
@@ -447,7 +445,7 @@ export const getTeacherStudents = async (req: any, res: any) => {
     const { teacherId } = req.params;
     const subjectPayment = await SubjectPayment.find({
       teacherId,
-    }).populate("studentId", "name email fields isActive");
+    }).populate("studentId", "name email fields");
     const studentData = <any>[];
     for (const payment of subjectPayment) {
       const student = payment.studentId as any;
@@ -457,7 +455,7 @@ export const getTeacherStudents = async (req: any, res: any) => {
         subjectPayment: payment._id,
       });
       const presentCount = attendanceRecords.filter(
-        (record) => record.status === "present" || record.status === "late"
+        (record) => record.status === "present"
       ).length;
       const attendanceRate =
         payment.sessionsAttended > 0

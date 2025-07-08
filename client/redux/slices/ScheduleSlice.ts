@@ -55,6 +55,42 @@ export const getTeacherSchedule = createAsyncThunk(
   }
 );
 
+export const addStudentsToSchedule = createAsyncThunk(
+  "schedule/addStudentsToSchedule",
+  async (
+    data: { scheduleId: string; studentIds: string[] },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axiosInstance.put(
+        `/api/schedules/${data.scheduleId}/add-students`,
+        { studentIds: data.studentIds }
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const removeStudentsFromSchedule = createAsyncThunk(
+  "schedule/removeStudentsFromSchedule",
+  async (
+    data: { scheduleId: string; studentIds: string[] },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axiosInstance.put(
+        `/api/schedules/${data.scheduleId}/remove-students`,
+        { studentIds: data.studentIds }
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const updateSchedule = createAsyncThunk(
   "schedule/updateSchedule",
   async (scheduleData: any, { rejectWithValue }) => {
@@ -177,6 +213,36 @@ export const scheduleSlice = createSlice({
         }
         state.loading = false;
         state.error = null;
+      })
+      .addCase(addStudentsToSchedule.rejected, (state: any, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(addStudentsToSchedule.pending, (state: any, action) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addStudentsToSchedule.fulfilled, (state: any, action) => {
+        state.loading = false;
+        const updatedSchedule = action.payload.schedule;
+        const index = state.schedules.findIndex(
+          (schedule: any) => schedule._id === updatedSchedule._id
+        );
+        if (index !== -1) {
+          state.schedules[index] = updatedSchedule;
+          const studentIndex = state.studentSchedules.findIndex(
+            (schedule: any) => schedule._id === updatedSchedule._id
+          );
+          if (studentIndex !== -1) {
+            state.studentSchedules[studentIndex] = updatedSchedule;
+          }
+          const teacherIndex = state.teacherSchedules.findIndex(
+            (schedule: any) => schedule._id === updatedSchedule._id
+          );
+          if (teacherIndex !== -1) {
+            state.teacherSchedules[teacherIndex] = updatedSchedule;
+          }
+        }
       })
       .addCase(updateSchedule.rejected, (state: any, action) => {
         state.loading = false;

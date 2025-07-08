@@ -223,20 +223,32 @@ export const getPaymentHistory = async (req: any, res: any) => {
 
 export const markAttendance = async (req: any, res: any) => {
   try {
-    const { studentId, scheduleId, status } = req.body;
+    const { studentId, teacherId, subject, status } = req.body;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const schedule = await Schedule.findOne({
+      studentIds: studentId,
+      teacherId,
+      subject,
+      isActive: true,
+    });
 
-    const schedule = await Schedule.findById(scheduleId).populate(
-      "subjectPaymentId"
-    );
     if (!schedule) {
-      return res.status(404).json({ message: "Schedule not found" });
+      return res
+        .status(404)
+        .json({ message: "Schedule not found for this student" });
     }
+
+    const subjectPayment = await SubjectPayment.findOne({
+      studentId,
+      teacherId,
+      subject,
+      isActive: true,
+    });
 
     const existingAttendance = await Attendance.findOne({
       studentId,
-      scheduleId,
+      scheduleId: schedule._id,
       date: {
         $gte: today,
         $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000),
@@ -249,9 +261,6 @@ export const markAttendance = async (req: any, res: any) => {
         .json({ message: "Attendance already marked for today" });
     }
 
-    const subjectPayment = await SubjectPayment.findById(
-      schedule.subjectPaymentId
-    );
     if (!subjectPayment) {
       return res
         .status(404)
@@ -286,8 +295,8 @@ export const markAttendance = async (req: any, res: any) => {
     const attendance = new Attendance({
       studentId,
       teacherId: schedule.teacherId,
-      scheduleId,
-      subjectPaymentId: schedule.subjectPaymentId,
+      scheduleId: schedule._id,
+      subjectPaymentId: schedule.subjectPaymentIds[0],
       subject: schedule.subject,
       date: new Date(),
       status,

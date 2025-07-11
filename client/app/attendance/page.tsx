@@ -93,20 +93,20 @@ const Attendance = () => {
     selectedSubject,
   ]);
 
-  const handleSubmitAttendance = async () => {
-    if (!selectedTeacher || !selectedSubject) {
-      alert("Please select teacher and subject");
-      return;
-    }
-
+  const handleSubmitAttendance = async (studentId: string) => {
     setIsSubmitting(true);
     try {
-      for (const record of Object.values(attendanceRecords)) {
-        console.log("Submitting attendance:", record);
-      }
-      alert("Attendance submitted successfully!");
+      const attendanceData = attendanceRecords[studentId];
+      await dispatch(
+        markAttendance({
+          studentId,
+          teacherId: selectedTeacher,
+          subject: selectedSubject.toLowerCase(),
+          status: attendanceData.status,
+        })
+      );
     } catch (error) {
-      alert("Error submitting attendance");
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -179,6 +179,8 @@ const Attendance = () => {
         loading={loading}
         attendanceRecords={attendanceRecords}
         setAttendanceRecords={setAttendanceRecords}
+        handleSubmitAttendance={handleSubmitAttendance}
+        isSubmitting={isSubmitting}
       />
       <div className="mt-6 border-t-2 border-gray-800 pt-4">
         <div className="flex justify-between items-center">
@@ -204,14 +206,14 @@ const Attendance = () => {
               Print
             </button>
 
-            <button
+            {/* <button
               onClick={handleSubmitAttendance}
               disabled={isSubmitting || !selectedTeacher || !selectedSubject}
               className="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <MdSave />
               {isSubmitting ? "Submitting..." : "Submit Attendance"}
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

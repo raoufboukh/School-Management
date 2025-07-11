@@ -12,7 +12,6 @@ export const createSchedule = async (req: any, res: any) => {
       startTime,
       endTime,
       classroom,
-      maxStudents = 10,
     } = req.body;
 
     const payments = await SubjectPayment.find({
@@ -79,7 +78,6 @@ export const createSchedule = async (req: any, res: any) => {
       startTime,
       endTime,
       classroom,
-      maxStudents,
     });
 
     await schedule.save();
@@ -130,7 +128,6 @@ export const getTeacherSchedule = async (req: any, res: any) => {
     const schedulesWithInfo = schedules.map((schedule) => ({
       ...schedule.toObject(),
       studentCount: schedule.studentIds.length,
-      availableSlots: schedule.maxStudents - schedule.studentIds.length,
     }));
 
     res.status(200).json({ teacherSchedules: schedulesWithInfo });

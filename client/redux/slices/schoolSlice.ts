@@ -132,6 +132,7 @@ export const markAttendance = createAsyncThunk(
         "/api/school/attendance",
         attendanceData
       );
+      console.log("success", data);
       return data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);

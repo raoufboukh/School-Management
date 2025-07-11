@@ -226,12 +226,15 @@ export const markAttendance = async (req: any, res: any) => {
     const { studentId, teacherId, subject, status } = req.body;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+
     const schedule = await Schedule.findOne({
-      studentIds: studentId,
-      teacherId,
-      subject,
+      studentIds: { $in: [studentId] },
+      teacherId: teacherId,
+      subject: subject,
       isActive: true,
     });
+
+    console.log(schedule);
 
     if (!schedule) {
       return res

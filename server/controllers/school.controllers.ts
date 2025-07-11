@@ -295,11 +295,13 @@ export const markAttendance = async (req: any, res: any) => {
       await subjectPayment.save();
     }
 
+    const subjectPaymentId = subjectPayment._id;
+
     const attendance = new Attendance({
       studentId,
       teacherId: schedule.teacherId,
       scheduleId: schedule._id,
-      subjectPaymentId: schedule.subjectPaymentIds[0],
+      subjectPaymentId: subjectPaymentId,
       subject: schedule.subject,
       date: new Date(),
       status,

@@ -212,18 +212,9 @@ export const removeStudentsFromSchedule = async (req: any, res: any) => {
 
 export const getAllSchedules = async (req: any, res: any) => {
   try {
-    const { day, subject, classroom } = req.query;
-
     const filter: any = { isActive: true };
-    if (day) filter.dayOfWeek = day;
-    if (subject) filter.subject = subject;
-    if (classroom) filter.classroom = classroom;
 
-    const schedules = await Schedule.find(filter)
-      .populate("studentId", "username email")
-      .populate("teacherId", "username email")
-      .populate("subjectPaymentId", "sessionsRemaining totalSessionsPaid")
-      .sort({ dayOfWeek: 1, startTime: 1 });
+    const schedules = await Schedule.find(filter);
 
     res.status(200).json({ schedules });
   } catch (error) {

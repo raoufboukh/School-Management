@@ -15,11 +15,9 @@ export const createSchedule = createAsyncThunk(
 
 export const getAllSchedules = createAsyncThunk(
   "schedule/getAllSchedules",
-  async (queryParams: any, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/api/schedules/all", {
-        params: queryParams,
-      });
+      const response = await axiosInstance.get("/api/schedules/all");
       return response.data.schedules;
     } catch (error: any) {
       return rejectWithValue(error.response.data);

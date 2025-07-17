@@ -8,8 +8,7 @@ import {
   MdPerson,
   MdCheck,
   MdClose,
-  MdAccessTime,
-  MdWarning,
+  MdSchedule,
 } from "react-icons/md";
 
 export const items = [
@@ -38,6 +37,12 @@ export const items = [
     role: ["student", "admin", "teacher"],
   },
   {
+    title: "Schedules",
+    link: "/schedules",
+    icon: MdSchedule,
+    role: ["student", "admin", "teacher"],
+  },
+  {
     title: "Inbox",
     link: "/inbox",
     icon: Inbox,
@@ -58,21 +63,31 @@ export const items = [
 ];
 
 export const subjects = [
-  "Math",
-  "Science",
-  "English",
-  "History",
-  "Geography",
-  "Physics",
-  "Chemistry",
-  "Biology",
-  "Computer Science",
-  "Art",
-  "Music",
-  "Physical Education",
-  "Economics",
-  "Psychology",
-  "Sociology",
+  "math",
+  "science",
+  "english",
+  "history",
+  "geography",
+  "physics",
+  "chemistry",
+  "biology",
+  "computer Science",
+  "art",
+  "music",
+  "physical Education",
+  "economics",
+  "psychology",
+  "sociology",
+];
+
+export const daysOfWeek = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
 ];
 
 export const tablePayment = [
@@ -177,4 +192,15 @@ export const tableAttendance = [
     icon: "",
     classes: "",
   },
+];
+
+export const tableSchedules = [
+  "teacher",
+  "subject",
+  "day",
+  "time",
+  "classroom",
+  "students",
+  "status",
+  "actions",
 ];
